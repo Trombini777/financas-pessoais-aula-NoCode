@@ -90,7 +90,16 @@ export function TransactionModal({ open, onClose, onSaved, editingTransaction }:
 
     setLoading(true);
     const supabase = createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setError("Sessão expirada. Faça login novamente.");
+      setLoading(false);
+      return;
+    }
+
     const payload = {
+      user_id: user.id,
       description: form.description.trim(),
       amount,
       date: form.date,
